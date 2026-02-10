@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #FF6B6B;
+      --secondary-color: #FFD93D;
+      --accent-color: #6BCB77;
+      --bg-color: #FFFDF5;
+      --text-color: #4A4A4A;
+      --card-bg: #FFFFFF;
+    }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 600px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 0px var(--secondary-color);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+      border: 2px solid #FFF0F0;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      border: 2px solid #E0E0E0;
+      border-radius: 15px;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-family: inherit;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      resize: none;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    button {
+      background: linear-gradient(45deg, var(--primary-color), #FF8E8E);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.3rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    /* Praise Animation Area */
+    #praise-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .praise-text {
+      font-size: 5rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      text-shadow: 3px 3px 0px white, 6px 6px 0px var(--secondary-color);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .praise-text.show {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: var(--secondary-color);
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(720deg);
+      }
+    }
+
+    /* 3 Days Ago Section */
+    .memory-lane {
+      margin-top: 40px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s, transform 1s;
+    }
+
+    .memory-lane.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .memory-title {
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .memory-item {
+      background: #F0FFF4;
+      border: 2px solid #C6F6D5;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      text-align: left;
+      color: #2F855A;
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>やったこと記録</h1>
+    <p class="subtitle">今日も一日お疲れ様！小さなことでも記録しよう</p>
+
+    <div class="card">
+      <textarea id="input-task" placeholder="例：洗濯物をたたんだ、コードを書いた、生きてた..."></textarea>
+      <button onclick="submitTask()">記録して褒めてもらう！</button>
+      <div id="loader" class="loader"></div>
+    </div>
+
+    <div id="memory-lane" class="memory-lane">
+      <div class="memory-title">✨ 3日前もこんなに頑張ってたんだね！ ✨</div>
+      <div id="past-tasks">
+        <!-- Past tasks will act here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="praise-container">
+    <div id="praise-text" class="praise-text"></div>
+  </div>
+
+  <script>
+    const praises = [
+      "めっちゃすごい！",
+      "天才！！！",
+      "今日も進んでる！",
+      "完璧！！！",
+      "さすが！！！",
+      "偉すぎる！",
+      "神！！！",
+      "最高！！！",
+      "生きててえらい！",
+      "素晴らしすぎる！"
+    ];
+
+    function submitTask() {
+      const input = document.getElementById('input-task');
+      const task = input.value.trim();
+
+      if (!task) return;
+
+      // Reset UI immediately
+      input.value = '';
+
+      // Show immediate praise
+      showPraise();
+
+      // Save to GAS
+      // document.getElementById('loader').style.display = 'block';
+      google.script.run
+        .withSuccessHandler(onSaveSuccess)
+        .withFailureHandler(onSaveFailure)
+        .saveData(task);
+    }
+
+    function showPraise() {
+      const container = document.getElementById('praise-text');
+      const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+
+      container.textContent = randomPraise;
+      container.classList.add('show');
+
+      spawnConfetti();
+
+      setTimeout(() => {
+        container.classList.remove('show');
+      }, 2000);
+    }
+
+    function onSaveSuccess() {
+      console.log("Saved successfully");
+      // document.getElementById('loader').style.display = 'none';
+    }
+
+    function onSaveFailure(error) {
+      console.error("Error saving:", error);
+      alert("保存に失敗しました...");
+    }
+
+    function loadPastData() {
+      google.script.run
+        .withSuccessHandler(displayPastData)
+        .getThreeDaysAgoData();
+    }
+
+    function displayPastData(data) {
+      const container = document.getElementById('memory-lane');
+      const list = document.getElementById('past-tasks');
+
+      if (data && data.length > 0) {
+        list.innerHTML = '';
+        data.forEach(task => {
+          const div = document.createElement('div');
+          div.className = 'memory-item';
+          div.textContent = task;
+          list.appendChild(div);
+        });
+        container.classList.add('visible');
+      } else {
+        // If no data, maybe show a generic encouraging message or hide the section
+        // container.style.display = 'none'; 
+      }
+    }
+
+    function spawnConfetti() {
+      const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF'];
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+
+        const left = Math.random() * 100;
+        const animDuration = Math.random() * 3 + 2;
+        const bg = colors[Math.floor(Math.random() * colors.length)];
+
+        confetti.style.left = left + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.backgroundColor = bg;
+        confetti.style.animationDuration = animDuration + 's';
+
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+          confetti.remove();
+        }, animDuration * 1000);
+      }
+    }
+
+    // Load past data when page loads
+    window.onload = loadPastData;
+
+  </script>
+</body>
+
+</html>
