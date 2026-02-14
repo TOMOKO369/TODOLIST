@@ -7,18 +7,20 @@ function doGet() {
 /**
  * データをスプレッドシートに保存する
  * @param {string} content - やったことの内容
+ * @param {string} praise - 褒め言葉
  */
-function saveData(content) {
+function saveData(content, praise) {
   try {
-    const ss = SpreadsheetApp.openById('1oGi_Ta68GYofeeVB5mMUT4BZ4opzHhtKGR3JqNWVD14');
+    // 指定されたIDのスプレッドシートを開く
+    const ss = SpreadsheetApp.openById('1wmbUPZaIEFk2K_g53tooeZNXdWw7eoQeQJs4JAtBI80');
     const sheet = ss.getSheets()[0]; // 1枚目のシートを使用
     
     // 日付のフォーマット (yyyy/MM/dd)
     const date = new Date();
     const formattedDate = Utilities.formatDate(date, Session.getScriptTimeZone(), "yyyy/MM/dd");
     
-    // 最終行に追加: [日付, 内容]
-    sheet.appendRow([formattedDate, content]);
+    // 最終行に追加: [日付, 内容, 褒め言葉]
+    sheet.appendRow([formattedDate, content, praise]);
     return { success: true };
   } catch (e) {
     return { success: false, error: e.toString() };
@@ -30,7 +32,7 @@ function saveData(content) {
  */
 function getThreeDaysAgoData() {
   try {
-    const ss = SpreadsheetApp.openById('1oGi_Ta68GYofeeVB5mMUT4BZ4opzHhtKGR3JqNWVD14');
+    const ss = SpreadsheetApp.openById('1wmbUPZaIEFk2K_g53tooeZNXdWw7eoQeQJs4JAtBI80');
     const sheet = ss.getSheets()[0];
     const data = sheet.getDataRange().getValues();
     

@@ -239,22 +239,24 @@
       // Reset UI immediately
       input.value = '';
 
+      // Select random praise here to save it
+      const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+
       // Show immediate praise
-      showPraise();
+      showPraise(randomPraise);
 
       // Save to GAS
       // document.getElementById('loader').style.display = 'block';
       google.script.run
         .withSuccessHandler(onSaveSuccess)
         .withFailureHandler(onSaveFailure)
-        .saveData(task);
+        .saveData(task, randomPraise);
     }
 
-    function showPraise() {
+    function showPraise(text) {
       const container = document.getElementById('praise-text');
-      const randomPraise = praises[Math.floor(Math.random() * praises.length)];
 
-      container.textContent = randomPraise;
+      container.textContent = text;
       container.classList.add('show');
 
       spawnConfetti();
